@@ -23,16 +23,16 @@ access input and write output from the container.
 starting from a bash shell:
 ```bash
 # pull the docker image down to your machine
-docker pull dmccoll/monocle:0.1
+docker pull stuartlab/monocle
 
 # Move into some directory and make a space for shared storage.
 cd some/directory && mkdir shared
 
 # Move the data you'd like into shared storage
-cp ../../some-data ./shared
+cp ../../Astrocyte_cds.rda ./shared
 
 # Run the containers Rstudio server
-docker run -v $(pwd)/shared:/home/rstudio/shared -d -p 8787:8787 -e ROOT=TRUE dmccoll/monocle:0.1
+docker run -v $(pwd)/shared:/home/rstudio/shared -d -p 8787:8787 -e ROOT=TRUE stuartlab/monocle
 ```
  
 From there open your favorite browser (tested on chrome) at `http://localhost:8787/`.
