@@ -1,0 +1,3 @@
+[submodule "traj-converters"]
+	path = traj-converters
+	url = https://github.com/Stuartlab-UCSC/traj-converters
