@@ -35,7 +35,7 @@ cp ../../Astrocyte_cds.rda ./shared
 docker run -v $(pwd)/shared:/home/rstudio/shared -d -p 8787:8787 -e ROOT=TRUE stuartlab/monocle
 ```
  
-From there open your favorite browser (tested on chrome) at `http://localhost:8787/`.
+From there open your favorite browser (tested on chrome) at `http://localhost:8787/`. The default password and username are both `rstudio`.
 
 Now use the editor to create a script that runs on your data, and save
 the script to `/home/rstudio/shared` inside the container. An example
