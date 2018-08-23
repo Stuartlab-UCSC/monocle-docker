@@ -1,6 +1,6 @@
 # monocle-docker
 Environment for executing the monocle trajectory inference algorithm.
-Contains [functions](https://github.com/Stuartlab-UCSC/traj-converters) to convert the output to [common formats](https://github.com/Stuartlab-UCSC/traj-formats).
+Contains [functions](https://github.com/Stuartlab-UCSC/traj-converters) to convert the output to [common formats](https://github.com/Stuartlab-UCSC/traj-formats). The container is hosted on [docker hub](https://hub.docker.com/r/stuartlab/monocle/).
 
 The main purpose of the container is to minimize installation woes by 
 facilitating development and analysis inside the container. This has the
@@ -60,15 +60,14 @@ Astrocyte_cds <- orderCells(Astrocyte_cds)
 # Astrocyte_cds is now a completed monocle S4 class instance.
 
 # source the r script with the converters for monocle.
-source("/traj-converters/src/R/monocle_convert.r")
+source("/home/traj-converters/src/R/monocle_convert.r")
 
 # output the common json and cell_x_branch matrix from the monocle object
 write_cell_x_branch(Astrocyte_cds, file="/home/rstudio/shared/Astro.monocle.cellxbranch.tab")
 write_common_json(Astrocyte_cds, file="/home/rstudio/shared/Astro.monocle.json")
 ```
 
- After executing each line of that script in rstudio's console (e.g. using ctrl + enter shortcut of Rstudio's editor) you will have a `./shared/Astro.monocle.json` and a 
- `./shared/Astro.monocle.cellxbranch.tab` file on your
+ After executing each line of that script in rstudio's console (e.g. using ctrl + enter shortcut of Rstudio's editor) you will have a `./shared/Astro.monocle.json` and a `./shared/Astro.monocle.cellxbranch.tab` file on your
  local machine.
  
 
