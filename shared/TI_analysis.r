@@ -28,4 +28,4 @@ exp_mat <- get_data()
 monocle_obj <- monocle_analysis(exp_mat)
 
 # Write to common format.
-write_common_json(monocle_obj, file="/home/rstudio/monocle.json")
+write_common_json(monocle_obj, file="/home/shared/monocle.json")
