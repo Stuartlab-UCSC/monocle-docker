@@ -4,70 +4,90 @@ Contains [functions](https://github.com/Stuartlab-UCSC/traj-converters) to conve
 
 The main purpose of the container is to minimize installation woes by 
 facilitating development and analysis inside the container. This has the
-desirable side effect of reproducible computation environments. I'm
+desirable side effect of a reproducible computation environment. I'm
 willing to work with people if the container design doesn't fit a
-particular workflow (e.g. doesn't do jupyter notebook at the moment).
+particular workflow (e.g. jupyter notebook).
 Please submit a 'would be nice' issue and I'll have a peak and see what
 I can do.
 
-The docker containers can also be run stand alone and `exec`'d into.
-If that's more your slice of pie see the second workflow example below.
+[The docker containers can also be run stand alone with a predeveloped script.](#already)
 
 For instructions below I suggest creating a shared volume,
 `./shared` in the directory you are launching the docker from. This 
 volume acts as shared storage. The shared storage is the easiest way to
-access input and write output from the container.
+access input and output from the container.
 
-## Example workflow analysis with monocle outputing common formats
+## <a name="min"></a>A Minimal example from github repository:
+The repository has a predeveloped script that runs monocle on random data and oututs a monocle.json file to the `shared` directory.
 
-starting from a bash shell:
-```bash
-# pull the docker image down to your machine
-docker pull stuartlab/monocle
+`git clone https://github.com/Stuartlab-UCSC/monocle-docker.git && cd monocle-docker`
 
-# Move into some directory and make a space for shared storage.
-cd some/directory && mkdir shared
+Pull the container and run the script inside of it. 
 
-# Move the data you'd like into shared storage
-cp ../../Astrocyte_cds.rda ./shared
+`docker run -v $(pwd)/shared:/home/shared stuartlab/monocle Rscript /home/shared/TI_analysis.r`
 
-# Run the containers Rstudio server
-docker run -v $(pwd)/shared:/home/rstudio/shared -d -p 8787:8787 -e ROOT=TRUE stuartlab/monocle
-```
- 
-From there open your favorite browser (tested on chrome) at `http://localhost:8787/`. The default password and username are both `rstudio`.
+Peak in `./shared/monocle.json` to see the output.
 
-Now use the editor to create a script that runs on your data, and save
-the script to `/home/rstudio/shared` inside the container. An example
-script could be something as short as:
+## <a name="container"></a>Develop inside the container with Rstudio:
+
+Move into the directory you'd like to do your work in, and create a `shared` directory for the docker container.
+
+`cd some/directory && mkdir shared`
+
+Let's say you have a tab delimited expression file, `exp.tab`, you'd like to run TI analysis on. Move it into the shared directory.
+
+`cp ../../place/your/data/is/exp.tab shared`
+
+If you don't have an exp.tab file, you may create example data with R.
+
+`R -e 'set.seed(13);write.table(replicate(110, rnbinom(500, c(3, 10, 45, 100), .1)),file="shared/exp.tab",col.names=1:110)'`
+
+This command will pull the image down (if it doesn't exist on your machine), and run an Rstudio session in your browser.
+
+`docker run -v $(pwd)/shared:/home/shared -d -p 8787:8787 -e PASSWORD=ABC123 -e ROOT=TRUE stuartlab/monocle`
+
+From there open your favorite browser (tested on chrome) at `http://localhost:8787/`. The password is `ABC123` and username is `rstudio`.
+
+Now you can use Rstudio to create a script that runs on your data, and save
+the script to `/home/shared` inside the container. An example
+script could be something like:
+
 ```R
 library(monocle)
-# Make random data for testing
-#rd <- replicate(110, rnbinom(500, c(3, 10, 45, 100), .1))
-#colnames(rd)<- 1:110
-#Astrocyte_cds <- newCellDataSet(rd)
-
-# Contains an Astrocyte_cds CellDataSet 
-load("/home/rstudio/shared/Astrocyte_cds.rda")
-
-# Monocle analysis pipeline
-Astrocyte_cds <- estimateSizeFactors(Astrocyte_cds)
-Astrocyte_cds <- estimateDispersions(Astrocyte_cds)
-Astrocyte_ordering_genes <- subset(dispersionTable(Astrocyte_cds), mean_expression>=0.1)
-Astrocyte_cds <- setOrderingFilter(Astrocyte_cds, Astrocyte_ordering_genes)
-Astrocyte_cds <- reduceDimension(Astrocyte_cds, max_components = 2, method = "DDRTree")
-Astrocyte_cds <- orderCells(Astrocyte_cds)
-# Astrocyte_cds is now a completed monocle S4 class instance.
-
-# source the r script with the converters for monocle.
 source("/home/traj-converters/src/R/monocle_convert.r")
 
-# output the common json and cell_x_branch matrix from the monocle object
-write_cell_x_branch(Astrocyte_cds, file="/home/rstudio/shared/Astro.monocle.cellxbranch.tab")
-write_common_json(Astrocyte_cds, file="/home/rstudio/shared/Astro.monocle.json")
+read_data <- function(){
+  # Read tab matrix from shared dir.
+  read.table("/home/shared/exp.tab", sep="\t", header=T)
+}
+monocle_analysis <- function(expression_matrix){
+  # Return a completed monocle object
+  cds <- newCellDataSet(expression_matrix)
+  cds <- estimateSizeFactors(cds)
+  cds <- estimateDispersions(cds)
+  ordering_genes <- subset(dispersionTable(cds), mean_expression>=0.1)
+  cds <- setOrderingFilter(cds, ordering_genes)
+  cds <- reduceDimension(cds, max_components = 2, method = "DDRTree")
+  cds <- orderCells(cds)
+  return(cds)
+}
+
+# Execute pipeline.
+exp_mat <- read_data()
+monocle_obj <- monocle_analysis(exp_mat)
+
+# Write to common format.
+write_common_json(monocle_obj, file="/home/shared/monocle.json")
+write_cell_x_branch(monocle_obj, file="/home/shared/monocle.cxb.tab")
 ```
 
- After executing each line of that script in rstudio's console (e.g. using ctrl + enter shortcut of Rstudio's editor) you will have a `./shared/Astro.monocle.json` and a `./shared/Astro.monocle.cellxbranch.tab` file on your
- local machine.
- 
+In reality, you'll want to toy with the monocle_analysis function and investigate the resulting monocle object with the various plot functions provided by monocle. Once you're happy with the analysis and you've saved the script in the container, say `/home/shared/my_analysis_script.r`, you can re-run the script from outside the container, see below.
 
+## <a name="already"></a>Running a predeveloped script inside the container:
+This command assumes that you have a script `my_analysis_script.r` in a directory named `shared` in your current working directory. To make your life easier I suggest developing this script inside the container as above. If you did not do that, it's necessary that the paths in `my_analysis_script.r` match the container's file system. This amounts to changing the paths that read and write data from `path/on/machine/*` to `/home/shared/*`. 
+
+Make sure you have your data in the `shared` directory on your machine so the script can access it.
+
+`cp ../../data/for/script ./shared`
+
+`docker run -v $(pwd)/shared:/home/shared stuartlab/monocle Rscript /home/shared/my_analysis_script.r`
