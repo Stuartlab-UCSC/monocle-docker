@@ -82,7 +82,7 @@ Then bind the shared directory and execute the script.
 `docker run -v $(pwd)/shared:/home/shared stuartlab/monocle Rscript /home/shared/my_analysis_script.r`
 
 ## <a name="min"></a>Execute the container's native analysis script:
-This container has a script `/home/src/CLI_monocle.r`, that uses R's optparse package to create a command line interface for monocle. 
+This container has a script `/home/src/CLI_monocle.r` that uses R's optparse package to create a command line interface for monocle. 
 
 The most simple usage is to copy your data of interest into the shared directory, and run the script using: 
 
