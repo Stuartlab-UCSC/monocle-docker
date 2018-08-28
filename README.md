@@ -3,7 +3,7 @@ Environment for executing the monocle trajectory inference algorithm.
 Contains [functions](https://github.com/Stuartlab-UCSC/traj-converters) to convert the output to [common formats](https://github.com/Stuartlab-UCSC/traj-formats). The container is hosted on [docker hub](https://hub.docker.com/r/stuartlab/monocle/).
 
 
-This readme outlines two main ways the container can be used. You'll need docker and git installed on your machine to follow.
+This readme outlines three ways the container can be used. You'll need docker installed to follow.
 
 * [Develop analysis inside container using Rstudio.](#container)
 * [Execute a user defined script inside the image.](#already)
