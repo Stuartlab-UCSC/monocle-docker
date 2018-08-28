@@ -16,8 +16,8 @@ monocle_analysis <- function(expression_matrix){
   cds <- newCellDataSet(expression_matrix)
   cds <- estimateSizeFactors(cds)
   cds <- estimateDispersions(cds)
-  Astrocyte_ordering_genes <- subset(dispersionTable(cds), mean_expression>=0.1)
-  cds <- setOrderingFilter(cds, Astrocyte_ordering_genes)
+  ordering_genes <- subset(dispersionTable(cds), mean_expression>=0.1)
+  cds <- setOrderingFilter(cds, ordering_genes)
   cds <- reduceDimension(cds, max_components = 2, method = "DDRTree")
   cds <- orderCells(cds)
   return(cds)
@@ -29,3 +29,4 @@ monocle_obj <- monocle_analysis(exp_mat)
 
 # Write to common format.
 write_common_json(monocle_obj, file="/home/shared/monocle.json")
+write_cell_x_branch(monocle_obj, file="/home/shared/monocle.cxb.tab")
