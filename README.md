@@ -84,10 +84,12 @@ write_cell_x_branch(monocle_obj, file="/home/shared/monocle.cxb.tab")
 In reality, you'll want to toy with the monocle_analysis function and investigate the resulting monocle object with the various plot functions provided by monocle. Once you're happy with the analysis and you've saved the script in the container, say `/home/shared/my_analysis_script.r`, you can re-run the script from outside the container, see below.
 
 ## <a name="already"></a>Running a predeveloped script inside the container:
-This command assumes that you have a script `my_analysis_script.r` in a directory named `shared` in your current working directory. To make your life easier I suggest developing this script inside the container as above. If you did not do that, it's necessary that the paths in `my_analysis_script.r` match the container's file system. This amounts to changing the paths that read and write data from `path/on/machine/*` to `/home/shared/*`. 
+This command assumes that you have a script `my_analysis_script.r` in a directory named `shared` in your current working directory. To make your life easier I suggest developing this script inside the container as [above](#container). If you did not do that, it's necessary that the paths in `my_analysis_script.r` match the container's file system. This amounts to changing the paths that read and write data from `path/on/machine/*` to `/home/shared/*`. 
 
-Make sure you have your data in the `shared` directory on your machine so the script can access it.
+Make sure you have your data and script in a directory named `shared` so the docker has access to them.
 
-`cp ../../data/for/script ./shared`
+`mkdir shared && cp ../../data/for/script ./shared && cp ../../my_analysis_script ./shared`
+
+Then execute the script and bind the shared directory as a volume.
 
 `docker run -v $(pwd)/shared:/home/shared stuartlab/monocle Rscript /home/shared/my_analysis_script.r`
