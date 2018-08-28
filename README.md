@@ -29,7 +29,7 @@ If you don't have an exp.tab file, you may create example data with R.
 
 `R -e 'set.seed(13);write.table(replicate(110, rnbinom(500, c(3, 10, 45, 100), .1)),file="shared/exp.tab",col.names=1:110, sep="\t")'`
 
-Then will pull the image down (if it doesn't exist on your machine), and run an Rstudio session in your browser.
+Then pull the image down (if it doesn't exist on your machine), and run an Rstudio session in your browser.
 
 `docker run -v $(pwd)/shared:/home/shared -d -p 8787:8787 -e PASSWORD=ABC123 -e ROOT=TRUE stuartlab/monocle`
 
