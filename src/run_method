@@ -1,0 +1,29 @@
+#!/usr/local/bin/Rscript
+input <- commandArgs(trailingOnly=TRUE)[1]
+
+library(monocle)
+source("/home/traj-converters/src/R/monocle_convert.r")
+
+read_data <- function(file){
+  # Read tab matrix from shared dir.
+  as.matrix(read.table(paste(c("/data/",file)), sep="\t", header=T))
+}
+
+monocle_analysis <- function(expression_matrix){
+  # Return a completed monocle object
+  cds <- newCellDataSet(expression_matrix)
+  cds <- estimateSizeFactors(cds)
+  cds <- estimateDispersions(cds)
+  ordering_genes <- subset(dispersionTable(cds), mean_expression>=0.1)
+  cds <- setOrderingFilter(cds, ordering_genes)
+  cds <- reduceDimension(cds, max_components = 2, method = "DDRTree")
+  cds <- orderCells(cds)
+  return(cds)
+}
+
+# Execute pipeline.
+exp_mat <- read_data(input)
+monocle_obj <- monocle_analysis(exp_mat)
+
+# Write to common format.
+write_common_json(monocle_obj, file="/data/output_monocle.json")
