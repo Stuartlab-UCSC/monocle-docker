@@ -6,7 +6,7 @@ source("/home/traj-converters/src/R/monocle_convert.r")
 
 read_data <- function(file){
   # Read tab matrix from shared dir.
-  as.matrix(read.table(paste(c("/data/",file)), sep="\t", header=T))
+  as.matrix(read.table(paste(c("/data/",file),collapse=""), sep="\t", header=T))
 }
 
 monocle_analysis <- function(expression_matrix){
