@@ -5,15 +5,29 @@ Contains [functions](https://github.com/Stuartlab-UCSC/traj-converters) to conve
 
 This readme outlines three ways the container can be used. You'll need docker installed to follow.
 
+* [Execute the container's native analysis script.](#min)
 * [Develop analysis inside container using Rstudio.](#container)
 * [Execute a user defined script inside the image.](#already)
-* [Execute the container's native analysis script.](#min)
 
 
 For instructions below I suggest creating a shared volume,
 `./shared` in the directory you are launching the docker from. This 
 volume acts as shared storage. The shared storage is the easiest way to
 access input and output from the container.
+
+You can run this command in bash (R needs to be installed) to create the test expression data, exp.tab:
+
+`R -e 'set.seed(13);write.table(replicate(110, rnbinom(500, c(3, 10, 45, 100), .1)),file="shared/exp.tab",col.names=1:110, sep="\t")'`
+
+## <a name="min"></a>Execute the container's native analysis script:
+We are trying to establish a convention where containers for TI algorithms have a`run_method` script in the image's $PATH. This allows a uniform interface for containers with different algorithms. The pattern is:
+`docker run -v $(pwd):/data <container_name> run_method <tab delim exp file> <output.json>`
+
+If the second positional argument is ommitted then a file called output_*method*.json will be produced. Hence,
+
+`docker run -v $(pwd):/data stuartlab/monocle run_method exp.tab`
+
+Where 'exp.tab' is your expression file will produce a output_monocle.json in your current working directory.
 
 ## <a name="container"></a>Develop inside the container with Rstudio:
 
@@ -80,16 +94,3 @@ Make sure you have your data and script in a directory named `shared` so the doc
 Then bind the shared directory and execute the script.
 
 `docker run -v $(pwd)/shared:/home/shared stuartlab/monocle Rscript /home/shared/my_analysis_script.r`
-
-## <a name="min"></a>Execute the container's native analysis script:
-This container has a script `/home/src/CLI_monocle.r` that uses R's optparse package to create a command line interface for monocle. 
-
-The most simple usage is to copy your data of interest into the shared directory, and run the script using: 
-
-`cp ../../data/exp.tab ./shared`
-
-`docker run -v $(pwd)/shared:/home/shared stuartlab/monocle Rscript /home/src/CLI_monocle.r -i /home/shared/exp.tab -o monocle.json`
-
-For more details on the command line interface see:
-
-`docker run stuartlab/monocle Rscript /home/src/CLI_monocle.r --help`
