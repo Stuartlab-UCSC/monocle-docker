@@ -24,11 +24,11 @@ We are trying to establish a convention where containers for TI algorithms have 
 
 `docker run -v $(pwd):/data <container_name> run_method <tab delim exp file> <output.json>`
 
-If the second positional argument is ommitted then a file called output_*method*.json will be produced. Hence,
+If the second positional argument is ommitted then a file called output_*method*.json will be produced. Hence, if your expression file 'exp.tab' is in your current working directory:
 
 `docker run -v $(pwd):/data stuartlab/monocle run_method exp.tab`
 
-Where 'exp.tab' is your expression file will produce a output_monocle.json in your current working directory.
+will produce a 'output_monocle.json' file.
 
 ## <a name="container"></a>Develop inside the container with Rstudio:
 
