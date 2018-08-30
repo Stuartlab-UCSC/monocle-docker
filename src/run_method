@@ -1,5 +1,14 @@
 #!/usr/local/bin/Rscript
+default_file_name <- '/data/output_monocle.json'
 input <- commandArgs(trailingOnly=TRUE)[1]
+output <- commandArgs(trailingOnly=TRUE)[2]
+
+# Arg checking, and adding /data/ to output.
+if(is.na(output)){
+  output <- default_file_name
+} else {
+  output <- paste(c("/data/", output),collapse="")
+}
 
 library(monocle)
 source("/home/traj-converters/src/R/monocle_convert.r")
@@ -26,4 +35,4 @@ exp_mat <- read_data(input)
 monocle_obj <- monocle_analysis(exp_mat)
 
 # Write to common format.
-write_common_json(monocle_obj, file="/data/output_monocle.json")
+write_common_json(monocle_obj, file=output)
