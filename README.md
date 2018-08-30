@@ -21,6 +21,7 @@ You can run this command in bash (R needs to be installed) to create the test ex
 
 ## <a name="min"></a>Execute the container's native analysis script:
 We are trying to establish a convention where containers for TI algorithms have a`run_method` script in the image's $PATH. This allows a uniform interface for containers with different algorithms. The pattern is:
+
 `docker run -v $(pwd):/data <container_name> run_method <tab delim exp file> <output.json>`
 
 If the second positional argument is ommitted then a file called output_*method*.json will be produced. Hence,
