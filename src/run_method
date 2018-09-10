@@ -20,7 +20,7 @@ read_data <- function(file){
 
 monocle_analysis <- function(expression_matrix){
   # Return a completed monocle object
-  cds <- newCellDataSet(expression_matrix)
+  cds <- newCellDataSet(expression_matrix, expressionFamily = negbinomial())
   cds <- estimateSizeFactors(cds)
   cds <- estimateDispersions(cds)
   ordering_genes <- subset(dispersionTable(cds), mean_expression>=0.1)
