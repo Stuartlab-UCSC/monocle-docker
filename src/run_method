@@ -32,7 +32,7 @@ monocle_analysis <- function(expression_matrix){
 
 # Execute pipeline.
 exp_mat <- read_data(input)
-monocle_obj <- monocle_analysis(exp_mat)
+monocle_obj <- suppressWarnings(monocle_analysis(exp_mat))
 
 # Write to common format.
 write_common_json(monocle_obj, file=output)
