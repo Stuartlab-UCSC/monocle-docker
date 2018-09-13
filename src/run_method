@@ -31,8 +31,11 @@ monocle_analysis <- function(expression_matrix){
 }
 
 # Execute pipeline.
+message("Reading in Data...")
 exp_mat <- read_data(input)
+message("Executing monocle...")
 monocle_obj <- suppressWarnings(monocle_analysis(exp_mat))
 
 # Write to common format.
 write_common_json(monocle_obj, file=output)
+message("complete")
