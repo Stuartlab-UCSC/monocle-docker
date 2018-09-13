@@ -1,13 +1,19 @@
 #!/usr/local/bin/Rscript
 default_file_name <- '/data/output_monocle.json'
+default_format <- 'json'
+
 input <- commandArgs(trailingOnly=TRUE)[1]
 output <- commandArgs(trailingOnly=TRUE)[2]
+format <- commandArgs(trailingOnly=TRUE)[3]
 
-# Arg checking, and adding /data/ to output.
+# Arg checking, & setting defaults
 if(is.na(output)){
   output <- default_file_name
 } else {
   output <- paste(c("/data/", output),collapse="")
+}
+if(is.na(format)){
+  format <- default_format
 }
 
 suppressMessages(library(monocle))
@@ -36,6 +42,12 @@ exp_mat <- read_data(input)
 message("Executing monocle...")
 monocle_obj <- suppressWarnings(monocle_analysis(exp_mat))
 
-# Write to common format.
-write_common_json(monocle_obj, file=output)
+if(format == 'json'){
+  message("Converting to common format")
+  write_common_json(monocle_obj, file=output)
+} else if (format == 'cxb'){
+  message("Converterting to cell x branch")
+  write_cell_x_branch(monocle_obj, file=output)
+}
+
 message("complete")
