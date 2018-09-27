@@ -10,8 +10,19 @@ default_file_name <- '/data/markers.gmt'
 
 cell_x_branch <- commandArgs(trailingOnly=TRUE)[1]
 expression <-  commandArgs(trailingOnly=TRUE)[2]
+output <-  commandArgs(trailingOnly=TRUE)[3]
 
-branch_markers <- function(cell_x_branch, expression, cutoff=.01){
+if (is.na(output)){
+   output <- default_file_name
+} else {
+   output <- paste(c("/data/", output), collapse="")
+}
+
+# Max number of markers allowed per branch
+#max <-  commandArgs(trailingOnly=TRUE)[3]
+
+
+branch_markers <- function(cell_x_branch, expression, cutoff=.01, max=100){
   # Uses gam method used here: https://www.bioconductor.org/packages/devel/bioc/vignettes/slingshot/inst/doc/slingshot.html#identifying-temporally-expressed-genes
   # Returns a list of branch ids pointing to a ranked vector of gene names (ordered starting with miniumum pvalue) having an Fstat pvalue less than cutoff.  
   # expression: gene x cell matrix, values expression levels. should have hugo gene names
@@ -34,6 +45,9 @@ branch_markers <- function(cell_x_branch, expression, cutoff=.01){
       p
     })
     gene_names <- names(sort(gam.pval[gam.pval< .01]))
+    if (length(gene_names) > max) {
+	   gene_names <- gene_names[1:max]
+    } 
     top_genes_list[[branch_id]] <- gene_names
   }
   
@@ -72,6 +86,6 @@ for (name in names(marker_list)){
 }
 
 message("Writing to gmt...")
-write_gmt(marker_list, default_file_name)
+write_gmt(marker_list, output)
 
 message("Completed.")
