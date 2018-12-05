@@ -95,3 +95,14 @@ Make sure you have your data and script in a directory named `shared` so the doc
 Then bind the shared directory and execute the script.
 
 `docker run -v $(pwd)/shared:/home/shared stuartlab/monocle Rscript /home/shared/my_analysis_script.r`
+
+# Working on a remote server (or behind VPN).
+
+
+Follow the steps [to develop in R studio](#container) up until you are instructed to open your favorite browser.
+
+Use an ssh tunnel to attach the localhost:8787 of the remote server to the localhost:8787 of your machine.
+
+`ssh -L 8787:localhost:8787 sammy@your_server_ip`
+
+Now you can open your favorite browser on `http://localhost:8787/` and work within the filesystem of the remote server.
